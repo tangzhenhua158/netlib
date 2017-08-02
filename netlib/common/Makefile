@@ -1,3 +1,4 @@
+include ../../Makefile.inc
 export make_basedir = ../
 
 CC = g++
@@ -5,7 +6,7 @@ CXXFLAG = -Wall -Wno-unused-variable -ggdb -DBOOST_LOG_DYN_LINK
 
 ARRU = ar -ru
 
-INCLUDE := -I./
+INCLUDE := $(INCLUDE) -I./
 src_dbcommon2	:= Log.cpp Thread.cpp
 
 obj_dbcommon2	:= $(src_dbcommon2:.cpp=.o)

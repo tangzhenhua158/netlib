@@ -1,3 +1,4 @@
+include ../../Makefile.inc
 export make_basedir = ../
 
 CC = g++
@@ -5,7 +6,7 @@ CXXFLAG = -Wall -Wno-unused-variable -ggdb -DBOOST_LOG_DYN_LINK
 
 ARRU = ar -ru
 
-INCLUDE := -I./ -I../ -I../../ -I../../netlib/ -I../../netlib/net/ -I../../netlib/common/
+INCLUDE := $(INCLUDE) -I./ -I../ -I../../ -I../../netlib/ -I../../netlib/net/ -I../../netlib/common/
 obj_dbcommon2 := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 LIB = ../../lib/net.a ../../lib/common.a -L/usr/local/lib/ -lboost_system -lboost_thread -lboost_log -lpthread -lboost_log_setup
 
