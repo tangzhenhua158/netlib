@@ -25,7 +25,7 @@ OUTPUT = echo_server
 all: $(OUTPUT)
 
 $(OUTPUT): $(obj_dbcommon2)
-	$(CC) -o $@ $(obj_dbcommon2) $(LIB)
+	$(CC) $(LINK_FLAG) -o $@ $(obj_dbcommon2) $(LIB)
 
 install:
 	cp $(OUTPUT) ../../bin/$(OUTPUT)

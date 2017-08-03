@@ -8,7 +8,7 @@ ARRU = ar -ru
 
 INCLUDE := $(INCLUDE) -I./ -I../ -I../../ -I../../netlib/ -I../../netlib/net/ -I../../netlib/common/
 obj_dbcommon2 := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
-LIB = ../../lib/net.a ../../lib/common.a -L/usr/local/lib/ -lboost_system -lboost_thread -lboost_log -lpthread -lboost_log_setup
+LIB = -L../../lib/ ../../lib/net.a ../../lib/common.a -L/usr/local/lib/ -lboost_system -lboost_thread -lboost_log -lpthread -lboost_log_setup
 
 OUTPUT = http_server
 
@@ -25,7 +25,7 @@ OUTPUT = http_server
 all: $(OUTPUT)
 
 $(OUTPUT): $(obj_dbcommon2)
-	$(CC) -o $@ $(obj_dbcommon2) $(LIB)
+	$(CC) $(LINK_FLAG) -o $@ $(obj_dbcommon2) $(LIB)
 
 install:
 	cp $(OUTPUT) ../../bin/$(OUTPUT)
