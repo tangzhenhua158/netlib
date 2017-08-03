@@ -8,7 +8,7 @@ ARRU = ar -ru
 
 INCLUDE := $(INCLUDE) -I./ -I../ -I../../ -I../../netlib/ -I../../netlib/net/ -I../../netlib/common/
 obj_dbcommon2 := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
-LIB = -L../../lib ../../lib/net.a ../../lib/common.a -L/usr/local/lib/ -lboost_system -lboost_thread -lboost_log -lpthread -lboost_log_setup
+LIB = -L../../lib  ../../lib/net.a ../../lib/common.a -L/usr/local/lib/ -lboost_system -lboost_thread -lboost_log -lpthread -lboost_log_setup
 
 OUTPUT = echo_server
 
