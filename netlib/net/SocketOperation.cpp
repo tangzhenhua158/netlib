@@ -12,6 +12,23 @@ using namespace std;
 
 const int32_t SocketOperation::Ipv4AddrAny =htonl (INADDR_ANY);
 
+typedef struct sockaddr SA;
+
+template<typename To, typename From>
+inline To implicit_cast(From const &f) {
+	return f;
+}
+
+const SA* sockaddr_cast(const struct sockaddr_in* addr)
+{
+	return static_cast<const SA*>(implicit_cast<const void*>(addr));
+}
+
+SA* sockaddr_cast(struct sockaddr_in* addr)
+{
+	return static_cast<SA*>(implicit_cast<void*>(addr));
+}
+
 
 int SocketOperation::createNonblockingSocket()
 {
@@ -189,4 +206,51 @@ void SocketOperation::setTcpNoDelay(int fd,bool isEnable)
 {
     int opt = isEnable? 1:0;
     ::setsockopt(fd,IPPROTO_TCP,TCP_NODELAY,&opt,sizeof(opt));
+}
+
+int SocketOperation::getSocketError(int sockfd)
+{
+	int optval;
+	socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+
+	if (::getsockopt(sockfd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0)
+	{
+		return errno;
+	}
+	else
+	{
+		return optval;
+	}
+}
+
+bool SocketOperation::isSelfConnect(int sockfd)
+{
+	struct sockaddr_in localaddr = getLocalAddr(sockfd);
+	struct sockaddr_in peeraddr = getPeerAddr(sockfd);
+	return localaddr.sin_port == peeraddr.sin_port
+		&& localaddr.sin_addr.s_addr == peeraddr.sin_addr.s_addr;
+}
+
+struct sockaddr_in SocketOperation::getLocalAddr(int sockfd)
+{
+	struct sockaddr_in localaddr;
+	bzero(&localaddr, sizeof localaddr);
+	socklen_t addrlen = static_cast<socklen_t>(sizeof localaddr);
+	if (::getsockname(sockfd, sockaddr_cast(&localaddr), &addrlen) < 0)
+	{
+		//LOG_SYSERR << "sockets::getLocalAddr";
+	}
+	return localaddr;
+}
+
+struct sockaddr_in SocketOperation::getPeerAddr(int sockfd)
+{
+	struct sockaddr_in peeraddr;
+	bzero(&peeraddr, sizeof peeraddr);
+	socklen_t addrlen = static_cast<socklen_t>(sizeof peeraddr);
+	if (::getpeername(sockfd, sockaddr_cast(&peeraddr), &addrlen) < 0)
+	{
+		//LOG_SYSERR << "sockets::getPeerAddr";
+	}
+	return peeraddr;
 }

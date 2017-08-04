@@ -29,6 +29,10 @@ public:
     static bool toAddrIpv4(const std::string& addrIp,struct sockaddr_in& addrIn);
     static bool toAddrIpv4(const std::string& addr,uint16_t port,struct sockaddr_in& addrIn);
     static bool toAddrIpv4(uint16_t port,struct sockaddr_in& addrIn);
+	static int getSocketError(int sockfd);
+	static bool isSelfConnect(int sockfd);
+	static struct sockaddr_in getLocalAddr(int sockfd);
+	static struct sockaddr_in getPeerAddr(int sockfd);
 
     static std::string ipToString(struct sockaddr_in addr);
     static std::string toString(struct sockaddr_in addr);
