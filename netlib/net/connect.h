@@ -52,7 +52,7 @@ namespace net
 
 	private:
 		IOEventLoop* loop_;
-		boost::scoped_ptr<IOEvent> channel_;
+		boost::scoped_ptr<IOEvent> event_;
 		NewConnectionCallback newConnectionCallback_;
 		EventCallback   m_errCallback;
 		SocketAddr serverAddr_;

@@ -111,31 +111,31 @@ void Connector::restart()
 void Connector::connecting(int sockfd)
 {
 	setState(kConnecting);
-	assert(!channel_);
-	channel_.reset(new IOEvent(loop_, sockfd));
-	channel_->setWriteFunc(
+	assert(!event_);
+	event_.reset(new IOEvent(loop_, sockfd));
+	event_->setWriteFunc(
 		boost::bind(&Connector::handleWrite, this)); // FIXME: unsafe
-	channel_->setErrorFunc(
+	event_->setErrorFunc(
 		boost::bind(&Connector::handleError, this)); // FIXME: unsafe
 
-	// channel_->tie(shared_from_this()); is not working,
-	// as channel_ is not managed by shared_ptr
-	channel_->enableWriting(true);
+	// event_->tie(shared_from_this()); is not working,
+	// as event_ is not managed by shared_ptr
+	event_->enableWriting(true);
 }
 
 int Connector::removeAndResetChannel()
 {
-	channel_->disableAll();
-	channel_->removeFromLoop();
-	int sockfd = channel_->getFd();
-	// Can't reset channel_ here, because we are inside Channel::handleEvent
+	event_->disableAll();
+	event_->removeFromLoop();
+	int sockfd = event_->getFd();
+	// Can't reset event_ here, because we are inside Channel::handleEvent
 	loop_->runInLoop(boost::bind(&Connector::resetChannel, this)); // FIXME: unsafe
 	return sockfd;
 }
 
 void Connector::resetChannel()
 {
-	channel_.reset();
+	event_.reset();
 }
 
 void Connector::handleWrite()
