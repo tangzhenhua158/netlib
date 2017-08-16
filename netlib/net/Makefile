@@ -2,7 +2,7 @@ include ../../Makefile.inc
 export make_basedir = ../
 
 CC = g++
-CXXFLAG = -Wall -Wno-unused-variable -ggdb -DBOOST_LOG_DYN_LINK
+CXXFLAG = -Wall -Wno-unused-variable -ggdb -DBOOST_LOG_DYN_LINK 
 
 ARRU = ar -ru
 

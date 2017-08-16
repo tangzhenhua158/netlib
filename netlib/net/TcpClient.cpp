@@ -17,8 +17,8 @@ TcpClient::TcpClient(IOEventLoop* loop,
 
 TcpClient::~TcpClient()
 {
-	//LOG_INFO << "TcpClient::~TcpClient[" << name_
-	//	<< "] - connector " << get_pointer(connector_);
+	LogOutput(debug) << "TcpClient::~TcpClient[" << name_
+		<< "] - connector " << get_pointer(connector_);
 	
 	connector_->stop();
 }
@@ -26,8 +26,8 @@ TcpClient::~TcpClient()
 void TcpClient::connect()
 {
 	// FIXME: check state
-	//LOG_INFO << "TcpClient::connect[" << name_ << "] - connecting to "
-	//	<< connector_->serverAddress().toIpPort();
+	LogOutput(debug) << "TcpClient::connect[" << name_ << "] - connecting to "
+		<< connector_->serverAddress().toString();
 	connect_ = true;
 	connector_->start();
 }
@@ -70,6 +70,7 @@ void TcpClient::newConnection(int sockfd)
 	{
 		connection_ = tcpConnect;
 	}
+	connectCallback(tcpConnect);
 }
 
 void TcpClient::connectCloseEvent(boost::shared_ptr<TcpConnect> connect)

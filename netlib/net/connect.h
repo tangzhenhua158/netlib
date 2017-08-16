@@ -35,8 +35,8 @@ namespace net
 
 	private:
 		enum States { kDisconnected, kConnecting, kConnected };
-		static const int kMaxRetryDelayMs = 30*1000;
-		static const int kInitRetryDelayMs = 500;
+		static const int kMaxRetryDelayMs ;
+		static const int kInitRetryDelayMs ;
 
 	private:
 		void setState(States s) { state_ = s; }
@@ -52,7 +52,7 @@ namespace net
 
 	private:
 		IOEventLoop* loop_;
-		boost::scoped_ptr<IOEvent> event_;
+		boost::shared_ptr<IOEvent> event_;
 		NewConnectionCallback newConnectionCallback_;
 		EventCallback   m_errCallback;
 		SocketAddr serverAddr_;

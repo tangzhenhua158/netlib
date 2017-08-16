@@ -5,6 +5,9 @@
 
 using namespace net;
 
+const int Connector::kMaxRetryDelayMs = 30*1000;
+const int Connector::kInitRetryDelayMs = 500;
+
 Connector::Connector(IOEventLoop *loop, const SocketAddr& addr):
 	loop_(loop),
 	serverAddr_(addr),
@@ -36,7 +39,7 @@ void Connector::startInLoop()
 	}
 	else
 	{
-		//LOG_DEBUG << "do not connect";
+		LogOutput(debug) << "do not connect";
 	}
 }
 
@@ -87,12 +90,12 @@ void Connector::connect()
 	case EBADF:
 	case EFAULT:
 	case ENOTSOCK:
-		//LOG_SYSERR << "connect error in Connector::startInLoop " << savedErrno;
+		LogOutput(error)<< "connect error in Connector::startInLoop " << savedErrno;
 		SocketOperation::close(sockfd);
 		break;
 
 	default:
-		//LOG_SYSERR << "Unexpected error in Connector::startInLoop " << savedErrno;
+		LogOutput(error)<< "Unexpected error in Connector::startInLoop " << savedErrno;
 		SocketOperation::close(sockfd);
 		// connectErrorCallback_();
 		break;
@@ -110,6 +113,7 @@ void Connector::restart()
 
 void Connector::connecting(int sockfd)
 {
+	LogOutput(debug)<<"socket connected ";
 	setState(kConnecting);
 	assert(!event_);
 	event_.reset(new IOEvent(loop_, sockfd));
@@ -120,6 +124,7 @@ void Connector::connecting(int sockfd)
 
 	// event_->tie(shared_from_this()); is not working,
 	// as event_ is not managed by shared_ptr
+	loop_->addEvent(event_);
 	event_->enableWriting(true);
 }
 
@@ -140,21 +145,21 @@ void Connector::resetChannel()
 
 void Connector::handleWrite()
 {
-	//LOG_TRACE << "Connector::handleWrite " << state_;
-
+	LogOutput(info) << "Connector::handleWrite " << state_;
+	loop_->removeEvent(event_->getFd());
 	if (state_ == kConnecting)
 	{
 		int sockfd = removeAndResetChannel();
 		int err = SocketOperation::getSocketError(sockfd);
 		if (err)
 		{
-			//LOG_WARN << "Connector::handleWrite - SO_ERROR = "
-			//	<< err << " " << strerror_tl(err);
+			LogOutput(warning) << "Connector::handleWrite - SO_ERROR = "
+				<< err << " " << err;
 			retry(sockfd);
 		}
 		else if (SocketOperation::isSelfConnect(sockfd))
 		{
-			//LOG_WARN << "Connector::handleWrite - Self connect";
+			LogOutput(warning) << "Connector::handleWrite - Self connect";
 			retry(sockfd);
 		}
 		else
@@ -189,7 +194,7 @@ void Connector::handleError()
 	{
 		int sockfd = removeAndResetChannel();
 		int err = SocketOperation::getSocketError(sockfd);
-		//LOG_TRACE << "SO_ERROR = " << err << " " << strerror_tl(err);
+		LogOutput(error)<< "SO_ERROR = " << err << " " ;
 		retry(sockfd);
 	}
 }
@@ -200,14 +205,14 @@ void Connector::retry(int sockfd)
 	setState(kDisconnected);
 	if (connect_)
 	{
-		//LOG_INFO << "Connector::retry - Retry connecting to " << serverAddr_.toIpPort()
-		//	<< " in " << retryDelayMs_ << " milliseconds. ";
+		LogOutput(debug)<< "Connector::retry - Retry connecting to " << serverAddr_.toString()
+			<< " in " << retryDelayMs_ << " milliseconds. ";
 		loop_->runOniceAfter(
 			boost::bind(&Connector::startInLoop, this),retryDelayMs_/1000.0);
 		retryDelayMs_ = std::min(retryDelayMs_ * 2, kMaxRetryDelayMs);
 	}
 	else
 	{
-		//LOG_DEBUG << "do not connect";
+		LogOutput(debug) << "do not connect";
 	}
 }
