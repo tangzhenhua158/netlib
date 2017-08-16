@@ -18,12 +18,16 @@ int main()
     //创建服务器
     EchoServer server(&loop,addr);
 
+    IOEventLoopThread bussThread;
+    bussThread.start();
+
     //设置线程池大小
     server.setThreadPoolSize(3);
 
     //服务器开始运行
     server.start();
-
+    
+        cout<<"run"<<endl;
     //事件循环机制运行
     loop.run();
 }
