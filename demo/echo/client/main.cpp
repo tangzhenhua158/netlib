@@ -12,9 +12,13 @@ class EchoClient:public TcpClient
 public:
 	EchoClient(IOEventLoop* loop,
 		const SocketAddr& addr,
-		const std::string& name);
+		const std::string& name):
+	 TcpClient(loop,addr,name)
+	 {
 
-	~EchoClient();
+	 }
+
+	~EchoClient(){};
 
 	virtual void connectCallback(boost::shared_ptr<TcpConnect> tcpConnect)
 	{
