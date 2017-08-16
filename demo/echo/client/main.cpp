@@ -22,13 +22,16 @@ public:
 
 	virtual void connectCallback(boost::shared_ptr<TcpConnect> tcpConnect)
 	{
+		LogOutput(debug)<< "new tcp conn";
 		cout<<"new tcp CONN"<<endl;
+		tcpConnect->write("hello!");
 	};
-	virtual void messageCallback(boost::shared_ptr<TcpConnect>, Buffer&buf)
+	virtual void messageCallback(boost::shared_ptr<TcpConnect>tcpConnect, Buffer&buf)
 	{
 		string data;
 		buf.readAllAsString(data);
 		cout<<data<<endl;
+		tcpConnect->write(data);
 	}
 	virtual void writeCompletCallback(boost::shared_ptr<TcpConnect> tcpConnect) 
 	{
