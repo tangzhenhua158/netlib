@@ -88,3 +88,27 @@ void Buffer::swap(Buffer& rhs)
     std::swap(readIndex, rhs.readIndex);
     std::swap(writeIndex, rhs.writeIndex);
 }
+
+bool Buffer::replace(size_t pos, const char * rep, size_t n)
+{
+	if (pos + n > buffer.size())
+	{
+		return false;
+
+	}else if (pos + n <= writeIndex)
+	{
+		std::copy(rep, rep+n,buffer.begin()+ pos);
+
+	}else if( pos + n > writeIndex )
+	{
+		std::copy(rep, rep+n,buffer.begin()+ pos);
+		writeIndex += ( pos + n - writeIndex);
+	}
+	return true;
+	
+}
+
+void Buffer::reserve(size_t n)
+{
+	buffer.reserve(n);
+}

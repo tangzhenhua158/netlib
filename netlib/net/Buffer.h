@@ -112,6 +112,10 @@ public:
         }
         clearReadIndex((uint8_t*)end - readIndexPtr());
     }
+
+	bool replace(size_t pos, const char * rep, size_t n);
+	void reserve(size_t n);
+	size_t size(){ return buffer.size();}
 private:
     uint32_t readIndex;
     uint32_t writeIndex;
